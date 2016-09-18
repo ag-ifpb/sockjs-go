@@ -2,11 +2,17 @@ package main
 
 import (
     "os"
+    "io"
     "log"
     "net/http"
 
-    "gopkg.in/igm/sockjs-go.v2/sockjs"
+    "golang.org/x/net/websocket"
 )
+
+// Echo the data received on the WebSocket.
+func EchoServer(ws *websocket.Conn) {
+    io.Copy(ws, ws)
+}
 
 func main() {
     //
@@ -15,17 +21,9 @@ func main() {
       log.Fatal("$PORT must be set")
     }
     //
-    handler := sockjs.NewHandler("/echo", sockjs.DefaultOptions, echoHandler) 
-    log.Fatal(http.ListenAndServe(":" + port, handler))
-    log.Println("Server started on port: " + port)
-}
-
-func echoHandler(session sockjs.Session) {
-    for {
-        if msg, err := session.Recv(); err == nil {
-            session.Send(msg)
-            continue
-        }
-        break
+    http.Handle("/echo", websocket.Handler(EchoServer))
+    err := http.ListenAndServe(":" + port, nil)
+    if err != nil {
+        panic("ListenAndServe: " + err.Error())
     }
 }

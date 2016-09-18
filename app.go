@@ -17,6 +17,7 @@ func main() {
     //
     handler := sockjs.NewHandler("/echo", sockjs.DefaultOptions, echoHandler) 
     log.Fatal(http.ListenAndServe(":" + port, handler))
+    log.Println("Server started on port: " + port)
 }
 
 func echoHandler(session sockjs.Session) {

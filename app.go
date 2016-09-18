@@ -8,8 +8,14 @@ import (
 )
 
 func main() {
+    //
+    port := os.Getenv("PORT")
+    if port == "" {
+      log.WithField("PORT", port).Fatal("$PORT must be set")
+    }
+    //
     handler := sockjs.NewHandler("/echo", sockjs.DefaultOptions, echoHandler) 
-    log.Fatal(http.ListenAndServe(":8081", handler))
+    log.Fatal(http.ListenAndServe(":" + port, handler))
 }
 
 func echoHandler(session sockjs.Session) {
